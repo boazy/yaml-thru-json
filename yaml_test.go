@@ -41,6 +41,10 @@ type UnmarshalStringMap struct {
 	A map[string]string
 }
 
+type UnmarshalBoolMap struct {
+	A map[string]bool
+}
+
 type UnmarshalNestedString struct {
 	A NestedString
 }
@@ -104,6 +108,17 @@ b:
 		"b": &NamedThing{Name: "TestB"},
 	}
 	unmarshal(t, y, &s5, &e5)
+
+	// Test strict bool parsing
+	y = []byte("a:\n  on: true\n  off: false\n  yes: true\n  no: false\n  y: true\n  n: false\n  true: true\n  false: false")
+	s6 := UnmarshalBoolMap{}
+	e6 := UnmarshalBoolMap{map[string]bool{
+		"on": true, "off": false,
+		"yes": true, "no": false,
+		"y": true, "n": false,
+		"true": true, "false": false,
+	}}
+	unmarshal(t, y, &s6, &e6)
 }
 
 func unmarshal(t *testing.T, y []byte, s, e interface{}) {

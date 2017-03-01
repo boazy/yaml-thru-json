@@ -7,8 +7,18 @@ import (
 	"reflect"
 	"strconv"
 
-	"gopkg.in/yaml.v2"
+	// go-yaml is buggy and doesn't care to merge pull requests
+	// This version is slightly better
+	"gopkg.in/vinzenz/yaml.v2"
 )
+
+func yamlUnmarshal(in []byte, out interface{}) error {
+	dec := yaml.NewDecoderWithOptions(yaml.DecoderOptions{
+		Strict:     true,
+		StrictBool: true,
+	})
+	return dec.Unmarshal(in, out)
+}
 
 // Marshals the object into JSON then converts JSON to YAML and returns the
 // YAML.
@@ -51,7 +61,7 @@ func JSONToYAML(j []byte) ([]byte, error) {
 	// etc.) when unmarshalling to interface{}, it just picks float64
 	// universally. go-yaml does go through the effort of picking the right
 	// number type, so we can preserve number type throughout this process.
-	err := yaml.Unmarshal(j, &jsonObj)
+	err := yamlUnmarshal(j, &jsonObj)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +87,7 @@ func YAMLToJSON(y []byte) ([]byte, error) {
 func yamlToJSON(y []byte, jsonTarget *reflect.Value) ([]byte, error) {
 	// Convert the YAML to an object.
 	var yamlObj interface{}
-	err := yaml.Unmarshal(y, &yamlObj)
+	err := yamlUnmarshal(y, &yamlObj)
 	if err != nil {
 		return nil, err
 	}
