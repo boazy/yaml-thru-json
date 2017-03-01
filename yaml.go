@@ -9,7 +9,7 @@ import (
 
 	// go-yaml is buggy and doesn't care to merge pull requests
 	// This version is slightly better
-	"gopkg.in/vinzenz/yaml.v2"
+	"gopkg.in/boazy/go-yaml.v2"
 )
 
 func yamlUnmarshal(in []byte, out interface{}) error {
